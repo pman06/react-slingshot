@@ -20,14 +20,14 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - /
+            - ~/
 
   test:
     <<: *image
     steps:
       - checkout
       - attach_workspace:
-          at: /
+          at: ~/
       - run: npm run test
       
 
@@ -37,7 +37,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /
+          at: ~/
       - run: npm audit
 
 # Invoke jobs via workflows
