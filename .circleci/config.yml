@@ -2,25 +2,45 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+default: &image
+  docker:
+    - image: cimg/base:stable
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+  build:
+    <<: *image
     steps:
       - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+      - run: |
+          npm install 
+          npm run setup
+          npm run build
+          npm run lint
+      - save-workspace
+
+  test:
+    <<: *image
+    steps:
+      - checkout
+      - run: npm run test
+  
+  analyze:
+    <<: *image
+    steps:
+      - checkout
+      - run: npm audit
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  CI-CD-Workflow:
     jobs:
-      - say-hello
+      - build
+      - test:
+          requires: 
+            - build
+      - analyze:
+          requires:
+            - test
+      
