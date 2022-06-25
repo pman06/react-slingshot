@@ -17,17 +17,11 @@ jobs:
           npm run setup
           npm run build
           npm run lint
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - ~/
 
   test:
     <<: *image
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run: npm run test
       
 
@@ -36,8 +30,6 @@ jobs:
     <<: *image
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/
       - run: npm audit
 
 # Invoke jobs via workflows
